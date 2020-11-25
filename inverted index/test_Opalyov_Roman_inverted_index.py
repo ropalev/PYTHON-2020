@@ -1,11 +1,11 @@
-from task_Opalev_Roman_inverted_index import InvertedIndex, build_inverted_index, load_documents
+from task_Opalyov_Roman_inverted_index import InvertedIndex, build_inverted_index, load_documents
 from textwrap import dedent
 import pytest
 
 
-DATASET_BIG_FPATH = "./wikipedia_sample"
-DATASET_SMALL_FPATH = './small_wikipedia_sample'
-DATASET_TINY_FPATH = "./tiny_wikipedia_sample"
+DATASET_BIG_FPATH = "wikipedia_sample"
+DATASET_SMALL_FPATH = 'small_wikipedia_sample'
+DATASET_TINY_FPATH = "tiny_wikipedia_sample"
 DATASET_TINY_STR = dedent("""\
         123	some words A_word and nothing
         2	some word B_word in this dataset
@@ -69,11 +69,7 @@ def test_can_load_documents(tiny_dataset_fio):
 def test_query_inverted_index_intersect_result(tiny_dataset_fio, query, etalon_answer):
     documents = load_documents(tiny_dataset_fio)
     tiny_inverted_index = build_inverted_index(documents)
-    print((tiny_inverted_index))
     answer = tiny_inverted_index.query(query)
-    print(answer)
-    print(documents)
-    print(etalon_answer)
     assert sorted(answer) == sorted(etalon_answer), \
         ("Expected answer is {}, but you got {}".format(etalon_answer,answer)
          )

@@ -6,6 +6,7 @@ import struct
 import sys
 from io import TextIOWrapper
 
+
 class EncodedFileType(argparse.FileType):
     """
     Небольшой костыль для рабты с кодировкой cp-1251
@@ -179,14 +180,12 @@ def setup_parser(pars):
                               )
     query_file_group = query_parser.add_mutually_exclusive_group(required=True)
     query_file_group.add_argument('--query-file-utf8',
-                                  nargs='?',
                                   type=EncodedFileType('r', encoding="utf-8"),
                                   dest="query_file",
                                   help="use with 'query', query's path",
                                   default=TextIOWrapper(sys.stdin, encoding="utf-8"),
                                   )
     query_file_group.add_argument('--query-file-cp1251',
-                                  nargs='?',
                                   type=EncodedFileType('r', encoding="cp1251"),
                                   dest="query_file",
                                   help="use with 'query', query's path",
