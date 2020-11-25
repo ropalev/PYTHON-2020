@@ -1,4 +1,4 @@
-from task_opalev_roman_inverted_index import InvertedIndex, build_inverted_index, load_documents
+from task_Opalev_Roman_inverted_index import InvertedIndex, build_inverted_index, load_documents
 from textwrap import dedent
 import pytest
 
