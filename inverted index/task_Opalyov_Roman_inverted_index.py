@@ -42,13 +42,13 @@ class InvertedIndex:
     def query(self, words: list):
         """Return the list of relevant documents for the given query"""
         if not words:
-            return []
+            return ""
         ids_set = set(self.invert_index.get(words[0], []))
         if len(words) == 1:
-            return list([str(i) for i in ids_set])
+            return ",".join([str(i) for i in ids_set])
         for word in words[1:]:
             ids_set &= set(self.invert_index.get(word, []))
-        return list([str(i) for i in ids_set])
+        return ",".join([str(i) for i in ids_set])
 
 
     def dump(self, filepath: str):
@@ -86,6 +86,7 @@ class InvertedIndex:
             tup = struct.unpack("{}s".format(len_word) + "H" * num_ids, i[4:])
             key = tup[0].decode("utf-8")
             article_dict[key] = article_dict.get(key, []) + list(tup[1:])
+        # print([(k,len(v)) for k,v in article_dict.items() if len(v) > 20])
         return InvertedIndex(article_dict)
 
 
@@ -143,11 +144,9 @@ def setup_parser(pars):
     :return: None
     """
     subparser = pars.add_subparsers(help="chose command")
-
     build_parser = subparser.add_parser("build",
                                         help="build inverted index",
                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
     build_parser.add_argument('--dataset',
                               action='store',
                               type=str,
@@ -163,9 +162,7 @@ def setup_parser(pars):
                               default=None,
                               help="use with 'build', inverted index path",
                               )
-
     build_parser.set_defaults(callback=callback_build)
-
     query_parser = subparser.add_parser("query",
                                         help="query inverted index",
                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -197,7 +194,6 @@ def setup_parser(pars):
                                   dest="query",
                                   help="use with 'query', query itself",
                                   )
-
     query_parser.set_defaults(callback=callback_query)
 
 

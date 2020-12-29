@@ -3,7 +3,7 @@ from textwrap import dedent
 import pytest
 
 
-DATASET_BIG_FPATH = "wikipedia_sample"
+DATASET_BIG_FPATH = "wikipedia_sample.txt"
 DATASET_SMALL_FPATH = 'small_wikipedia_sample'
 DATASET_TINY_FPATH = "tiny_wikipedia_sample"
 DATASET_TINY_STR = dedent("""\
@@ -30,7 +30,7 @@ def test_load_documents_v2(tmpdir):
         "5	famous_phrases to be or not to be\n",
         "37	all words such as A_word and B_word are here\n"
     ]
-    assert etalon_document == documents , (
+    assert etalon_document == documents, (
         "load_documents incorrectly loaded dataset"
     )
 
@@ -50,19 +50,17 @@ def test_can_load_documents(tiny_dataset_fio):
         "5	famous_phrases to be or not to be\n",
         "37	all words such as A_word and B_word are here\n"
     ]
-    print(etalon_document)
-    print(documents)
     assert etalon_document == documents, ("load_documents incorrectly loaded dataset")
 
 
 @pytest.mark.parametrize(
     "query, etalon_answer",
     [
-         pytest.param(["A_word"], ["123", "37"]),
-         pytest.param(["B_word"], ["2", "37"]),
-         pytest.param(["A_word", "B_word"], ["37"]),
-         pytest.param(["word_does_not_exist"], []),
-         pytest.param([], []),
+         pytest.param(["A_word"], "123,37"),
+         pytest.param(["B_word"], "2,37"),
+         pytest.param(["A_word", "B_word"], "37"),
+         pytest.param(["word_does_not_exist"], ""),
+         pytest.param([], ""),
     ]
 )
 
@@ -70,7 +68,7 @@ def test_query_inverted_index_intersect_result(tiny_dataset_fio, query, etalon_a
     documents = load_documents(tiny_dataset_fio)
     tiny_inverted_index = build_inverted_index(documents)
     answer = tiny_inverted_index.query(query)
-    assert sorted(answer) == sorted(etalon_answer), \
+    assert answer == etalon_answer, \
         ("Expected answer is {}, but you got {}".format(etalon_answer,answer)
          )
 
@@ -90,10 +88,11 @@ def small_sample_wikipedia_documents():
     documents = load_documents(DATASET_SMALL_FPATH)
     return documents
 
+
 def test_can_build_and_query_inverted_index(wikipedia_documents):
     wikipedia_inverted_index = build_inverted_index(wikipedia_documents)
     doc_ids = wikipedia_inverted_index.query(["wikipedia"])
-    assert isinstance(doc_ids, list), "inverted index query should return list"
+    assert isinstance(doc_ids, str), "inverted index query should return str"
 
 @pytest.fixture
 def wikipedia_inverted_index(wikipedia_documents):
@@ -105,13 +104,6 @@ def small_wikipedia_inverted_index(small_sample_wikipedia_documents):
     wikipedia_inverted_index = build_inverted_index(small_sample_wikipedia_documents)
     return  wikipedia_inverted_index
 
-# def test_can_dump_and_load_inverted_index(tmpdir, small_wikipedia_inverted_index):
-#     index_fio = tmpdir.join("index.dump")
-#     small_wikipedia_inverted_index.dump(index_fio)
-#     loaded_inverted_index = InvertedIndex.load(index_fio)
-#     assert  small_wikipedia_inverted_index.invert_index == loaded_inverted_index.invert_index, (
-#         "load should return the same inverted index"
-#     )
 
 def test_can_dump_and_load_inverted_index(tmpdir, wikipedia_inverted_index):
     index_fio = tmpdir.join("index.dump")
